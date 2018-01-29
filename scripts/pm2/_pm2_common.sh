@@ -57,7 +57,7 @@ show_script_footer() {
 pm2_cmd_start() {
 
     show_script_header
-    echo "    Telling PM2 to start the application ..."
+    echo "    Telling PM2 to start the application..."
     show_pm2_app_variables
     show_script_footer
 
@@ -71,7 +71,7 @@ pm2_cmd_start() {
 pm2_cmd_stop() {
 
     show_script_header
-    echo "    Telling PM2 to stop the application ..."
+    echo "    Telling PM2 to stop the application..."
     show_pm2_app_variables
     show_script_footer
 
@@ -85,7 +85,7 @@ pm2_cmd_stop() {
 pm2_cmd_monitor() {
 
     show_script_header
-    echo "    Tailing application logs ..."
+    echo "    Tailing application logs..."
     show_pm2_app_variables
     show_script_footer
 
@@ -99,7 +99,7 @@ pm2_cmd_monitor() {
 pm2_cmd_delete() {
 
     show_script_header
-    echo "    Removing the application from PM2 ..."
+    echo "    Removing the application from PM2..."
     show_pm2_app_variables
     show_script_footer
 
@@ -113,7 +113,7 @@ pm2_cmd_delete() {
 pm2_cmd_reload() {
 
     show_script_header
-    echo "    Reloading the application config in PM2 ..."
+    echo "    Reloading the application config in PM2..."
     show_pm2_app_variables
     show_script_footer
 
@@ -129,7 +129,7 @@ pm2_cmd_reload() {
 pm2_cmd_restart() {
 
     show_script_header
-    echo "    Telling PM2 to restart the application ..."
+    echo "    Telling PM2 to restart the application..."
     show_pm2_app_variables
     show_script_footer
 
@@ -143,7 +143,7 @@ pm2_cmd_restart() {
 pm2_cmd_status() {
 
     show_script_header
-    echo "    Displaying PM2 status ..."
+    echo "    Displaying PM2 status..."
     show_pm2_app_variables
     show_script_footer
 
@@ -156,7 +156,7 @@ pm2_cmd_status() {
 pm2_cmd_show_config() {
 
     show_script_header
-    echo "    Dumping the application config file ..."
+    echo "    Dumping the application config file..."
     show_pm2_app_variables
     show_script_footer
 

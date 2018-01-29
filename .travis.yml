@@ -27,7 +27,7 @@ deploy:
     acl: public_read
     default_text_charset: "utf-8"
     region: "us-east-1"
-    upload-dir: "docs/source/node-sls-tools"
+    upload-dir: "docs/source/core-common"
     local_dir: "docs/html"
     on:
       all_branches: true
