@@ -1,5 +1,5 @@
 {
-  "name": "@corefw/core-common",
+  "name": "@corefw/common",
   "version": "5.0.0",
   "description": "Common libs and base classes.",
   "author": "Theodor Shaytanov <brainenjii@gmail.com>",
@@ -17,7 +17,7 @@
   "homepage": "https://github.com/corefw/core-common#readme",
   "main": "index.js",
   "dependencies": {
-    "@corefw/core-model": "^5.0.0",
+    "@corefw/model": "^5.0.0",
     "aws-sdk": "^2.2.26",
     "bluebird": "^3.4.6",
     "chalk": "^1.1.3",
