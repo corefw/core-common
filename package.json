@@ -1,6 +1,6 @@
 {
   "name": "@corefw/common",
-  "version": "5.0.2",
+  "version": "5.0.3",
   "description": "Common libs and base classes.",
   "author": "Theodor Shaytanov <brainenjii@gmail.com>",
   "contributors": [
