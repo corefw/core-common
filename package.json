@@ -1,6 +1,6 @@
 {
   "name": "@corefw/common",
-  "version": "5.0.1",
+  "version": "5.0.2",
   "description": "Common libs and base classes.",
   "author": "Theodor Shaytanov <brainenjii@gmail.com>",
   "contributors": [
@@ -20,8 +20,8 @@
   "homepage": "https://github.com/corefw/core-common#readme",
   "main": "index.js",
   "dependencies": {
-	"@corefw/model": "^5.0.0",
-    "aws-sdk": "^2.2.26",
+    "@corefw/model": "^5.0.0",
+    "aws-sdk": "^2.192.0",
     "bluebird": "^3.4.6",
     "chalk": "^1.1.3",
     "eyes": "^0.1.8",
@@ -61,6 +61,7 @@
     "docw:status": "./scripts/pm2/doc-watcher/status.sh",
     "docw:stop": "./scripts/pm2/doc-watcher/stop.sh"
   },
+  "//license": "SEE LICENSE IN LICENSE.md",
   "//devDependencies": {
     "chai": "^4.1.2",
     "mocha": "^3.2.0"
