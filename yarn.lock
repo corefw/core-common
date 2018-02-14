@@ -2,35 +2,6 @@
 # yarn lockfile v1
 
 
-"@corefw/common@^5.0.0":
-  version "5.0.3"
-  resolved "https://registry.yarnpkg.com/@corefw/common/-/common-5.0.3.tgz#6cc2947babf34ff376978b33b9260f0afc9d561d"
-  dependencies:
-    "@corefw/model" "^5.0.0"
-    aws-sdk "^2.192.0"
-    bluebird "^3.4.6"
-    chalk "^1.1.3"
-    eyes "^0.1.8"
-    jsonwebtoken "^7.2.1"
-    lodash "^4.16.6"
-    lodash-inflection "^1.5.0"
-    moment "^2.18.1"
-    mysql2 "^1.4.2"
-    redis "^2.6.2"
-    requireindex "^1.1.0"
-    sequelize "github:vmadman/sequelize#luke-dev"
-    tipe "^0.1.12"
-    tv4 "^1.2.7"
-    uuid "^3.0.1"
-    verror "^1.10.0"
-
-"@corefw/model@^5.0.0":
-  version "5.0.0"
-  resolved "https://registry.yarnpkg.com/@corefw/model/-/model-5.0.0.tgz#461f13e85bf33127326889a7ddb269b9dc288f34"
-  dependencies:
-    "@corefw/common" "^5.0.0"
-    requireindex "^1.1.0"
-
 "@lukechavers/jsdoc@^0.1.7":
   version "0.1.7"
   resolved "https://registry.yarnpkg.com/@lukechavers/jsdoc/-/jsdoc-0.1.7.tgz#537605fe31270115605cd5252552cad29a7fccc3"
