@@ -1,14 +1,21 @@
-License
----------
+MIT License
 
-Copyright C2C Schools, LLC - All Rights Reserved
+Copyright (c) 2018 C2C Schools, LLC. All Rights Reserved.
 
-The software herein is NOT open source software. It should not be distributed,
-or even viewed, except by parties who have been granted permission to do so by
-C2C Schools, LLC explicitly, in writing, and who have personally signed a
-non-disclosure agreement and confidential information agreement with C2C,
-Schools LLC.
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
 
-This included source code and related resources are owned by C2C Schools, LLC
-and C2C Schools, LLC retains any and all intellectual property rights associated
-with this work and/or any derivative works to the fullest extent permitted by law.
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.

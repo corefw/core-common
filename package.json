@@ -1,8 +1,8 @@
 {
   "name": "@corefw/common",
-  "version": "5.0.6",
+  "version": "5.0.7",
   "description": "Common libs and base classes.",
-  "license": "SEE LICENSE IN LICENSE.md",
+  "license": "MIT",
   "author": "Theodor Shaytanov <brainenjii@gmail.com>",
   "contributors": [
     "Luke Chavers <luke@c2cschools.com>",
