@@ -1,6 +1,6 @@
 {
   "name": "@corefw/common",
-  "version": "5.0.7",
+  "version": "5.0.8",
   "description": "Common libs and base classes.",
   "license": "MIT",
   "author": "Theodor Shaytanov <brainenjii@gmail.com>",
@@ -50,14 +50,13 @@
     "mocha": "^3.2.0"
   },
   "scripts": {
-    "ci:docs": "./scripts/build-docs-ci.sh",
-    "docs": "./scripts/build-docs-local.sh",
+    "ci:docs": "./scripts/docs/build-docs-ci.sh",
+    "docs": "./scripts/docs/build-docs-local.sh",
     "browser-sync": "./scripts/pm2/browser-sync/do-pm2-action.sh",
     "build-docs": "./scripts/pm2/build-docs/do-pm2-action.sh"
   },
   "//scripts": {
-    "depr-docwatch": "./scripts/watch-and-build-docs.sh",
-    "depr-docswait": "./scripts/build-docs-then-wait.sh",
+    "depr-docswait": "./scripts/docs/build-docs-then-wait.sh",
     "docw:delete": "./scripts/pm2/doc-watcher/delete.sh",
     "docw:monitor": "./scripts/pm2/doc-watcher/monitor.sh",
     "docw:reload": "./scripts/pm2/doc-watcher/reload.sh",
