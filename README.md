@@ -25,7 +25,7 @@ Coming Soon...
 
 
 [travis-link]:        https://travis-ci.org/corefw/core-common
-[github-link]:        https://github.com/c2cs/docker-logging-kinesis-to-sqs
+[github-link]:        https://github.com/corefw/core-common
 
 [core-microservices]: https://github.com/corefw/core-microservices
 [core-model]:         https://github.com/corefw/core-model
