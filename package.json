@@ -1,6 +1,6 @@
 {
   "name": "@corefw/common",
-  "version": "5.1.13",
+  "version": "5.1.14",
   "description": "Common libs and base classes.",
   "license": "MIT",
   "author": "Theodor Shaytanov <brainenjii@gmail.com>",
