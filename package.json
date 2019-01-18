@@ -1,6 +1,6 @@
 {
   "name": "@corefw/common",
-  "version": "5.1.29",
+  "version": "5.1.30",
   "description": "Common libs and base classes.",
   "license": "MIT",
   "author": "Luke Chavers <luke@c2cschools.com>",

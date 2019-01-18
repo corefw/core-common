@@ -1,7 +1,7 @@
 core-common
 ===========
 
-[![Build Status](https://travis-ci.org/corefw/core-common.svg?branch=master)][travis-link]
+[![Build Status](https://travis-ci.com/corefw/core-common.svg?branch=master)][travis-link]
 
 Common classes and utilities for the Core Framework.
 
@@ -24,7 +24,7 @@ Coming Soon...
 
 
 
-[travis-link]:        https://travis-ci.org/corefw/core-common
+[travis-link]:        https://travis-ci.com/corefw/core-common
 [github-link]:        https://github.com/corefw/core-common
 
 [core-microservices]: https://github.com/corefw/core-microservices
