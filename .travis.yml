@@ -11,6 +11,7 @@ install:
 #- yarn --version
 #- yarn install --non-interactive
 script:
+  - npm test
   - npm run ci:docs
 deploy:
   - provider: npm
