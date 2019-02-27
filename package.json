@@ -32,16 +32,6 @@
     "pretest": "npm run lint",
     "test": "echo \"No tests\""
   },
-  "//scripts": {
-    "depr-docswait": "./scripts/docs/build-docs-then-wait.sh",
-    "docw:delete": "./scripts/pm2/doc-watcher/delete.sh",
-    "docw:monitor": "./scripts/pm2/doc-watcher/monitor.sh",
-    "docw:reload": "./scripts/pm2/doc-watcher/reload.sh",
-    "docw:restart": "./scripts/pm2/doc-watcher/restart.sh",
-    "docw:start": "./scripts/pm2/doc-watcher/start.sh",
-    "docw:status": "./scripts/pm2/doc-watcher/status.sh",
-    "docw:stop": "./scripts/pm2/doc-watcher/stop.sh"
-  },
   "dependencies": {
     "ajv": "^6.6.2",
     "aws-sdk": "^2.382.0",
@@ -61,17 +51,10 @@
     "uuid": "^3.3.2",
     "verror": "^1.10.0"
   },
-  "//dependencies": {
-    "@corefw/model": "^6.0.0"
-  },
   "devDependencies": {
     "@corefw/eslint-config": "^1.0.11",
     "@lukechavers/jsdoc": "^0.1.7",
     "eslint": "^5.12.0",
     "jsdoc": "^3.5.5"
-  },
-  "//devDependencies": {
-    "chai": "^4.1.2",
-    "mocha": "^3.2.0"
   }
 }
