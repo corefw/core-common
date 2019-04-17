@@ -1,60 +1,78 @@
 {
-  "name": "@corefw/common",
-  "version": "6.0.3",
-  "description": "Common libs and base classes.",
-  "license": "MIT",
-  "author": "Luke Chavers <luke@c2cschools.com>",
-  "contributors": [
-    "Kevin Sanders <kevin@c2cschools.com>",
-    "Theodor Shaytanov <brainenjii@gmail.com>"
-  ],
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/corefw/core-common.git"
-  },
-  "publishConfig": {
-    "access": "public"
-  },
-  "bugs": {
-    "url": "https://github.com/corefw/core-common/issues"
-  },
-  "homepage": "https://github.com/corefw/core-common#readme",
-  "main": "index.js",
-  "engines": {
-    "node": ">=8"
-  },
-  "scripts": {
-    "ci:docs": "./scripts/docs/build-docs-ci.sh",
-    "docs": "./scripts/docs/build-docs-local.sh",
-    "browser-sync": "./scripts/pm2/browser-sync/do-pm2-action.sh",
-    "build-docs": "./scripts/pm2/build-docs/do-pm2-action.sh",
-    "lint": "eslint . --ext .json,.js,.md",
-    "pretest": "npm run lint",
-    "test": "echo \"No tests\""
-  },
-  "dependencies": {
-    "ajv": "^6.6.2",
-    "aws-sdk": "^2.382.0",
-    "bluebird": "^3.5.3",
-    "chalk": "^1.1.3",
-    "eyes": "^0.1.8",
-    "js-yaml": "^3.12.0",
-    "jsonwebtoken": "^8.4.0",
-    "lodash": "^4.17.11",
-    "lodash-inflection": "^1.5.0",
-    "moment": "^2.23.0",
-    "mysql2": "^1.6.4",
-    "redis": "^2.6.2",
-    "requireindex": "^1.1.0",
-    "sequelize": "^4.42.0",
-    "tipe": "^0.1.12",
-    "uuid": "^3.3.2",
-    "verror": "^1.10.0"
-  },
-  "devDependencies": {
-    "@corefw/eslint-config": "^1.0.11",
-    "@lukechavers/jsdoc": "^0.1.7",
-    "eslint": "^5.12.0",
-    "jsdoc": "^3.5.5"
-  }
+	"name": "@corefw/common",
+	"version": "6.1.0",
+	"description": "Common libs and base classes.",
+	"license": "MIT",
+	"author": "Luke Chavers <luke@c2cschools.com>",
+	"contributors": [
+		"Kevin Sanders <kevin@c2cschools.com>",
+		"Theodor Shaytanov <brainenjii@gmail.com>"
+	],
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/corefw/core-common.git"
+	},
+	"publishConfig": {
+		"access": "public"
+	},
+	"bugs": {
+		"url": "https://github.com/corefw/core-common/issues"
+	},
+	"homepage": "https://github.com/corefw/core-common#readme",
+	"main": "./lib/index.js",
+	"engines": {
+		"node": ">=8"
+	},
+	"//scripts": {
+		"ci:docs": "./scripts/docs/build-docs-ci.sh",
+		"docs": "./scripts/docs/build-docs-local.sh",
+		"browser-sync": "./scripts/pm2/browser-sync/do-pm2-action.sh",
+		"build-docs": "./scripts/pm2/build-docs/do-pm2-action.sh",
+		"lint": "eslint . --ext .json,.js,.md",
+		"pretest": "npm run lint",
+		"test": "echo \"No tests\""
+	},
+	"dependencies": {
+		"aws-sdk": "^2.382.0",
+		"bluebird-extra": "^2.0.0",
+		"chalk": "2.4.2",
+		"dot-object": "^1.7.1",
+		"eyes": "^0.1.8",
+		"fast-glob": "^2.2.6",
+		"fs-extra-promise": "^1.0.1",
+		"indefinite": "^2.2.1",
+		"js-yaml": "^3.12.0",
+		"lodash": "^4.17.11",
+		"lodash-inflection": "^1.5.0",
+		"moment": "^2.23.0",
+		"tipe": "^0.1.12",
+		"uuid": "^3.3.2",
+		"verror": "^1.10.0"
+	},
+	"//dependencies": {
+		"ajv": "^6.6.2",
+		"aws-sdk": "^2.382.0",
+		"bluebird-extra": "^2.0.0",
+		"chalk": "^1.1.3",
+		"eyes": "^0.1.8",
+		"fs-extra-promise": "^1.0.1",
+		"js-yaml": "^3.12.0",
+		"jsonwebtoken": "^8.4.0",
+		"lodash": "^4.17.11",
+		"lodash-inflection": "^1.5.0",
+		"moment": "^2.23.0",
+		"mysql2": "^1.6.4",
+		"redis": "^2.6.2",
+		"requireindex": "^1.1.0",
+		"sequelize": "^4.42.0",
+		"tipe": "^0.1.12",
+		"uuid": "^3.3.2",
+		"verror": "^1.10.0"
+	},
+	"//devDependencies": {
+		"@corefw/eslint-config": "^1.0.11",
+		"@lukechavers/jsdoc": "^0.1.7",
+		"eslint": "^5.12.0",
+		"jsdoc": "^3.5.5"
+	}
 }
