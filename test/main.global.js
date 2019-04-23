@@ -30,16 +30,10 @@ const globalTestHelpers = {
 
 		switch( fullClassName ) {
 
-			case "Core.asset.ioc.Container":
-				return Core.inst( "Core.asset.ioc.Container", {} );
-
 			case "Core.asset.ClassLoader":
 				return Core.inst( "Core.asset.ClassLoader", {
 					iocContainer: initDep( "Core.asset.ioc.Container" )
 				} );
-
-			case "Core.template.Parser":
-				return Core.inst( "Core.template.Parser", {} );
 
 			case "Core.context.Context":
 				return Core.inst( "Core.context.Context", {
@@ -59,11 +53,14 @@ const globalTestHelpers = {
 					fileSystemAdapter : initDep( "Core.fs.adapter.Local" )
 				} );
 
-			case "Core.fs.adapter.Local":
-				return Core.inst( "Core.fs.adapter.Local", {} );
+			case "Core.type.Validator":
+				return Core.inst( "Core.type.Validator", {
+					typeInspector : initDep( "Core.type.Inspector" ),
+					assetManager  : Core.assetManager
+				} );
 
 			default:
-				throw new Error( "Unknown or invalid class ('" + fullClassName + "') requested from `global.testHelpers.initTestDependency()`. See `main.global.js` for more info." );
+				return Core.inst( fullClassName, {} );
 
 		}
 

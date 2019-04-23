@@ -1,6 +1,6 @@
 /**
  * @file
- * Defines the `Test.fixtures.asset` namespaces.
+ * Defines the `Test.fixture.asset` namespace.
  *
  * Note: This file, like all `_typedefs.js` files, exist solely to provide code meta information for external systems,
  * such as JSDoc. They can be used to define namespaces, custom types, and other, similar, resources that do not fit
