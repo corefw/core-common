@@ -55,8 +55,8 @@ const globalTestHelpers = {
 
 			case "Core.type.Validator":
 				return Core.inst( "Core.type.Validator", {
-					typeInspector : initDep( "Core.type.Inspector" ),
-					assetManager  : Core.assetManager
+					assetManager : Core.assetManager,
+					classLoader  : initDep( "Core.asset.ClassLoader" ),
 				} );
 
 			default:

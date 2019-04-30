@@ -76,6 +76,19 @@ describe( "Core.type.check.simple.IsCoreClassName", function () {
 
 		} );
 
+		it( "should return TRUE when passed a Core Class Name (variant #5)", function () {
+
+			// Define the test value
+			let testValue = "Core.abstract.BaseClass";
+
+			// Evaluate
+			let result = check.evaluateTarget( testValue );
+
+			// Assert
+			expect( result ).to.equal( true );
+
+		} );
+
 		it( "should return FALSE when passed a string containing an invalid/malformed Core Class Name (variant #1)", function () {
 
 			// Define the test value

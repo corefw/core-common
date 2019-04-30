@@ -15,9 +15,22 @@
 
 describe( "Core", function () {
 
-	describe( "Something", function () {
+	describe( "(Singleton Alias Methods)", function () {
 
-		it.skip( "should do something", function () {
+		describe( "#classExists()", function() {
+
+			it( "should return TRUE when a class definition can be found", function() {
+
+				expect( Core.classExists( "Core.abstract.Component" ) ).to.equal( true );
+				expect( Core.classExists( "Core.asset.Manager"      ) ).to.equal( true );
+
+			} );
+
+			it( "should return FALSE when a class definition cannot be found", function() {
+
+				expect( Core.classExists( "Core.class.Missing"      ) ).to.equal( false );
+
+			} );
 
 		} );
 

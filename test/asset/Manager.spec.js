@@ -11,6 +11,8 @@
 
 "use strict";
 
+/* eslint func-style: "off", require-jsdoc: "off", comma-spacing: "off" */
+
 const PATH = require( "path" );
 
 describe( "Core.asset.Manager", function() {
@@ -23,57 +25,6 @@ describe( "Core.asset.Manager", function() {
 	} );
 
 	describe( "(Namespace Management)", function() {
-
-		describe( "#_resolveClassPath()", function() {
-
-			it( "should properly resolve class paths", function() {
-
-				// Establish our expectations.
-				let expected = PATH.join( __dirname, "/fake/Something.js" );
-
-				// Register a temporary namespace
-				Core.assetManager.registerNamespace(
-					"Testing.path.resolution.",
-					[ __dirname, "fake" ]
-				);
-
-				// Execute the resolver method
-				let result = Core.assetManager._resolveClassPath( "Testing.path.resolution.Something" );
-
-				// Assert
-				expect( result ).to.equal( expected );
-
-			} );
-
-			it( "should give preference to more-specific namespaces", function() {
-
-				// Establish our expectations.
-				let expected = PATH.join( __dirname, "/specific/Something.js" );
-
-				// Register a few temporary namespace, with varying
-				// levels of specificity.
-				Core.assetManager.registerNamespace(
-					"Testing.specificity.a",
-					[ __dirname, "moderatelySpecific" ]
-				);
-				Core.assetManager.registerNamespace(
-					"Testing.specificity.",
-					[ __dirname, "inspecific" ]
-				);
-				Core.assetManager.registerNamespace(
-					"Testing.specificity.a.b",
-					[ __dirname, "specific" ]
-				);
-
-				// Execute the resolver method
-				let result = Core.assetManager._resolveClassPath( "Testing.specificity.a.b.Something" );
-
-				// Assert
-				expect( result ).to.equal( expected );
-
-			} );
-
-		} );
 
 		describe( "#registerNamespace()", function() {
 
@@ -466,6 +417,249 @@ describe( "Core.asset.Manager", function() {
 
 	} );
 
+	describe( "(Class Loading)", function() {
+
+		describe( "#_resolveClassPath()", function() {
+
+			it( "should properly resolve class paths", function() {
+
+				// Establish our expectations.
+				let expected = PATH.join( __dirname, "/fake/Something.js" );
+
+				// Register a temporary namespace
+				Core.assetManager.registerNamespace(
+					"Testing.path.resolution.",
+					[ __dirname, "fake" ]
+				);
+
+				// Execute the resolver method
+				let result = Core.assetManager._resolveClassPath( "Testing.path.resolution.Something" );
+
+				// Assert
+				expect( result ).to.equal( expected );
+
+			} );
+
+			it( "should give preference to more-specific namespaces", function() {
+
+				// Establish our expectations.
+				let expected = PATH.join( __dirname, "/specific/Something.js" );
+
+				// Register a few temporary namespace, with varying
+				// levels of specificity.
+				Core.assetManager.registerNamespace(
+					"Testing.specificity.a",
+					[ __dirname, "moderatelySpecific" ]
+				);
+				Core.assetManager.registerNamespace(
+					"Testing.specificity.",
+					[ __dirname, "inspecific" ]
+				);
+				Core.assetManager.registerNamespace(
+					"Testing.specificity.a.b",
+					[ __dirname, "specific" ]
+				);
+
+				// Execute the resolver method
+				let result = Core.assetManager._resolveClassPath( "Testing.specificity.a.b.Something" );
+
+				// Assert
+				expect( result ).to.equal( expected );
+
+			} );
+
+		} );
+
+		describe( "#classExists()", function() {
+
+
+			it( "should return TRUE when a class definition can be found", function() {
+
+				expect( Core.assetManager.classExists( "Core.abstract.Component" ) ).to.equal( true );
+				expect( Core.assetManager.classExists( "Core.asset.Manager"      ) ).to.equal( true );
+
+			} );
+
+			it( "should return FALSE when a class definition cannot be found", function() {
+
+				expect( Core.assetManager.classExists( "Core.class.Missing"      ) ).to.equal( false );
+
+			} );
+
+		} );
+
+		describe( "#cls()", function() {
+
+			it( "should load and return valid class definitions", function() {
+
+				// Define our test class name
+				let testClassName = "Core.abstract.Component";
+
+				// Execute
+				let result = Core.cls( testClassName );
+
+				// Assert
+				expect( result.prototype.$amClassName ).to.equal( testClassName );
+
+			} );
+
+			it( "should return existing definitions verbatim", function() {
+
+				// Define our test class name
+				let testClassName 		= "Core.abstract.Component";
+				let testClassDefinition = Core.cls( testClassName );
+
+				// Execute
+				let result = Core.cls( testClassDefinition );
+
+				// Assert
+				expect( result.prototype.$amClassName ).to.equal( testClassName );
+
+			} );
+
+			it( "should throw an Error when the specified class cannot be found", function() {
+
+				// Define our test class name
+				let testClassName = "Core.bad.Class";
+
+				// When checking for errors we must
+				// wrap the target in a helper function
+				function execTest() {
+
+					// Execute
+					Core.cls( testClassName );
+
+				}
+
+
+				// Assert
+				expect( execTest ).to.throw( Error );
+
+			} );
+
+		} );
+
+	} );
+
+	describe( "(Reverse Lookup)", function() {
+
+		describe( "#reverseLookup()", function() {
+
+			let commonPaths;
+
+			before( function() {
+
+				commonPaths = {};
+
+				commonPaths.tests 		= PATH.join( __dirname         , "../" 			);
+				commonPaths.root  		= PATH.join( commonPaths.tests , "../" 			);
+				commonPaths.fixtures  	= PATH.join( commonPaths.tests , "_fixtures" 	);
+				commonPaths.lib  		= PATH.join( commonPaths.root  , "lib" 			);
+
+			} );
+
+			it( "should properly resolve class names (variant #1)", function() {
+
+				// Define a class name to test with
+				let testPath = PATH.join( commonPaths.fixtures, "asset/manager/reverse/FauxClassOne.js" );
+
+				// Define the expected, resulting, class name
+				let expectedClassName = "Test.fixture.asset.manager.reverse.FauxClassOne";
+
+				// Execute
+				let result = Core.assetManager.reverseLookup( testPath, { confirm: true } );
+
+				// Assert
+				expect( result ).to.equal( expectedClassName );
+
+			} );
+
+			it( "should properly resolve class names (variant #2)", function() {
+
+				// Define a class name to test with
+				let testPath = PATH.join( commonPaths.lib, "asset/Manager.js" );
+
+				// Define the expected, resulting, class name
+				let expectedClassName = "Core.asset.Manager";
+
+				// Execute
+				let result = Core.assetManager.reverseLookup( testPath, { confirm: true } );
+
+				// Assert
+				expect( result ).to.equal( expectedClassName );
+
+			} );
+
+			it( "should properly resolve class names (variant #3)", function() {
+
+				// Define a class name to test with
+				let testPath = PATH.join( commonPaths.lib, "asset/mixin/Parenting" );
+
+				// Define the expected, resulting, class name
+				let expectedClassName = "Core.asset.mixin.Parenting";
+
+				// Execute
+				let result = Core.assetManager.reverseLookup( testPath, { confirm: true } );
+
+				// Assert
+				expect( result ).to.equal( expectedClassName );
+
+			} );
+
+			it( "should properly resolve class names (variant #4)", function() {
+
+				// Define a class name to test with
+				// We allow (and remove) slashes because some methods might add '/'
+				// to the end of paths that do not have a file extension.
+				let testPath = PATH.join( commonPaths.lib, "asset/mixin/Parenting/" );
+
+				// Define the expected, resulting, class name
+				let expectedClassName = "Core.asset.mixin.Parenting";
+
+				// Execute
+				let result = Core.assetManager.reverseLookup( testPath, { confirm: true } );
+
+				// Assert
+				expect( result ).to.equal( expectedClassName );
+
+			} );
+
+			it( "should return NULL when it cannot resolve a class name", function() {
+
+				// Define a class name to test with
+				let testPath = PATH.join( commonPaths.lib, "../", "bad/Something" );
+
+				// Define the expected, resulting, class name
+				let expectedClassName = null;
+
+				// Execute
+				let result = Core.assetManager.reverseLookup( testPath, { confirm: false } );
+
+				// Assert
+				expect( result ).to.equal( expectedClassName );
+
+			} );
+
+			it( "should return NULL when the resolved class name would be invalid", function() {
+
+				// Define a class name to test with
+				// This should fail because `parenting` would be capitalized, if it were a class file.
+				let testPath = PATH.join( commonPaths.lib, "asset/mixin/parenting" );
+
+				// Define the expected, resulting, class name
+				let expectedClassName = null;
+
+				// Execute
+				let result = Core.assetManager.reverseLookup( testPath, { confirm: false } );
+
+				// Assert
+				expect( result ).to.equal( expectedClassName );
+
+			} );
+
+		} );
+
+	} );
 
 } );
 
