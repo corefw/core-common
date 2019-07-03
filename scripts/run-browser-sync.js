@@ -27,6 +27,7 @@ bs.init( {
 			fn    : function () {
 
 				this.reload();
+
 			},
 		},
 	],
