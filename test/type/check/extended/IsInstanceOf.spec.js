@@ -16,6 +16,9 @@
 const _ 	= Core.dep( "_" );
 const UTIL 	= require( "util" );
 
+// Aliases for Core Errors
+const ValidationError = Core.cls( "Core.error.ValidationError" );
+
 describe( "Core.type.check.extended.IsInstanceOf", function () {
 
 	let check;
@@ -586,6 +589,63 @@ describe( "Core.type.check.extended.IsInstanceOf", function () {
 				expect( result ).to.equal( "not an instance of '<AnonymousAsyncFunction>'" );
 
 			} );
+
+		} );
+
+	} );
+
+	describe( "<- Core.type.Validator#validate()", function () {
+
+		let validator;
+
+		before( function () {
+			validator = testHelpers.initTestDependency( "Core.type.Validator" );
+		} );
+
+		it( "should throw an Error when the target value is NOT an instance of the provided, arbitrary, Constructor", function () {
+
+			// Define the constructor
+			const AConstructor = function () {};
+
+			// Define the test value
+			let testValue = {};
+
+			// Whenever we check for errors, we need to wrap with a helper
+			function testFn() {
+
+				// Evaluate
+				validator.validate( testValue, {
+					instanceOf: AConstructor
+				} );
+
+			}
+
+
+			// Assert
+			expect( testFn ).to.throw( ValidationError );
+
+		} );
+
+		it( "should not throw an Error when the target value is an instance of the provided, arbitrary, Constructor", function () {
+
+			// Define the constructor
+			const AConstructor = function () {};
+
+			// Define the test value
+			let testValue = new AConstructor();
+
+			// Whenever we check for errors, we need to wrap with a helper
+			function testFn() {
+
+				// Evaluate
+				validator.validate( testValue, {
+					instanceOf: AConstructor
+				} );
+
+			}
+
+			// Assert
+			expect( testFn ).to.not.throw( Error );
 
 		} );
 

@@ -1,6 +1,6 @@
 {
 	"name": "@corefw/common",
-	"version": "6.1.0",
+	"version": "6.1.1",
 	"description": "Common libs and base classes.",
 	"license": "MIT",
 	"author": "Luke Chavers <luke@c2cschools.com>",
@@ -23,15 +23,6 @@
 	"engines": {
 		"node": ">=8"
 	},
-	"//scripts": {
-		"ci:docs": "./scripts/docs/build-docs-ci.sh",
-		"docs": "./scripts/docs/build-docs-local.sh",
-		"browser-sync": "./scripts/pm2/browser-sync/do-pm2-action.sh",
-		"build-docs": "./scripts/pm2/build-docs/do-pm2-action.sh",
-		"lint": "eslint . --ext .json,.js,.md",
-		"pretest": "npm run lint",
-		"test": "echo \"No tests\""
-	},
 	"dependencies": {
 		"aws-sdk": "^2.382.0",
 		"bluebird-extra": "^2.0.0",
@@ -49,6 +40,15 @@
 		"tipe": "^0.1.12",
 		"uuid": "^3.3.2",
 		"verror": "^1.10.0"
+	},
+	"//scripts": {
+		"ci:docs": "./scripts/docs/build-docs-ci.sh",
+		"docs": "./scripts/docs/build-docs-local.sh",
+		"browser-sync": "./scripts/pm2/browser-sync/do-pm2-action.sh",
+		"build-docs": "./scripts/pm2/build-docs/do-pm2-action.sh",
+		"lint": "eslint . --ext .json,.js,.md",
+		"pretest": "npm run lint",
+		"test": "echo \"No tests\""
 	},
 	"//dependencies": {
 		"ajv": "^6.6.2",

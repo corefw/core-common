@@ -23,6 +23,20 @@ class TestMixinOne {
 		} );
 	}
 
+	mixinParamTest1( someParam ) {
+		return this.$validateParam( "someParam", someParam, [ "isBoolean", "isString" ] );
+	}
+
+
+	objTestMixin( obj ) {
+
+		return this.$validateObject( "obj", obj, {
+			a : "isString",
+			b : "isBoolean"
+		} );
+
+	}
+
 }
 
 module.exports = TestMixinOne;

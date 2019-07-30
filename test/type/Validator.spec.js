@@ -13,6 +13,11 @@
 
 /* eslint func-style: "off", require-jsdoc: "off" */
 
+// Alias a few errors that we'll be checking for...
+const ValidationError = Core.cls( "Core.error.ValidationError" );
+
+const _ = Core.dep( "_" );
+
 describe( "Core.type.Validator", function () {
 
 	let validator;
@@ -370,6 +375,61 @@ describe( "Core.type.Validator", function () {
 
 			} );
 
+			it( "should flag returned values as normalized", function() {
+
+				// Define the test instruction
+				let testInstruction = "isString";
+
+				// Execute the normalize method
+				let result = validator._normalizeValidationInstructions( testInstruction );
+
+				// Assert
+				expect( result[ Core.constants.validation.IS_NORMALIZED_INSTRUCTION ] ).to.equal( true );
+
+			} );
+
+			it( "should not modify instructions that are already well-formatted", function() {
+
+				// Define the test instruction
+				let testInstruction = { "$all": [ { "$check": "isString", "$args": [], "$negate": false } ] };
+
+				// Define the expected result
+				let expectedResult = testInstruction;
+
+				// Execute the normalize method
+				let result = validator._normalizeValidationInstructions( testInstruction );
+
+				// Assert
+				expect( result ).to.eql( expectedResult );
+
+			} );
+
+			it( "should be idempotent", function() {
+
+				// Define the test instruction
+				let testInstruction = { "$all": [ { "$check": "isString", "$args": [], "$negate": false } ] };
+
+				// Locals
+				let lastResult	= _.clone( testInstruction );
+				let result;
+
+				// Normalize ten times
+				for( let i = 0; i < 10; i++ ) {
+
+					// Normalize
+					result = validator._normalizeValidationInstructions( lastResult );
+
+					// Assert
+					expect( result ).to.eql( lastResult 		);
+					expect( result ).to.eql( testInstruction 	);
+
+					// Save for the next run..
+					lastResult = result;
+
+				}
+
+			} );
+
 		} );
 
 		describe( "( <string> )", function () {
@@ -522,6 +582,71 @@ describe( "Core.type.Validator", function () {
 
 	} );
 
+	describe( "#mergeInstructions", function () {
+
+		function doMergeTest( ...instructions ) {
+
+			let raw = validator.mergeInstructions( ...instructions );
+			return validator._normalizeValidationInstructions( raw );
+
+		}
+
+		it( "should merge simple instructions", function () {
+
+			// Execute the test
+			let result = doMergeTest( "isString", "isBoolean" );
+
+			// Define expectations
+			let expectedResult = {
+				$all: [
+					{
+						$check  : "isString",
+						$args   : [],
+						$negate : false,
+					}, {
+						$check  : "isBoolean",
+						$args   : [],
+						$negate : false,
+					},
+				],
+			};
+
+			// Assert
+			expect( result ).to.eql( expectedResult );
+
+		} );
+
+		it( "should flatten instructions when possible", function () {
+
+			// Execute the test
+			let result = doMergeTest( "isString", { isBoolean: true, isNull: true } );
+
+			// Define expectations
+			let expectedResult = {
+				$all: [
+					{
+						$check  : "isString",
+						$args   : [],
+						$negate : false,
+					}, {
+						$check  : "isBoolean",
+						$args   : [],
+						$negate : false,
+					}, {
+						$check  : "isNull",
+						$args   : [],
+						$negate : false,
+					},
+				],
+			};
+
+			// Assert
+			expect( result ).to.eql( expectedResult );
+
+		} );
+
+	} );
+
 	describe( ".checks", function () {
 
 		it( "should automatically populate built-in checks", function () {
@@ -656,131 +781,945 @@ describe( "Core.type.Validator", function () {
 
 	} );
 
-	describe( "#validate()", function () {
+	describe( ".defaultValidationInstruction", function () {
 
-		describe( "(Basic Functionality)", function () {
+		it( "should be a plain object", function() {
+			expect( validator.defaultValidationInstructions ).to.be.an( "object" );
+		} );
 
-			it( "should return validation results when validation passes", function () {
+		it( "should be flagged as being 'normalized'", function() {
+			expect(
+				validator.defaultValidationInstructions[ Core.constants.validation.IS_NORMALIZED_INSTRUCTION ]
+			).to.equal( true );
+		} );
 
-				// A value to test..
-				let testValue 		= null;
+		it( "should be flagged as being the default instruction", function() {
+			expect(
+				validator.defaultValidationInstructions[ Core.constants.validation.IS_DEFAULT_INSTRUCTION ]
+			).to.equal( true );
+		} );
 
-				// The validation instructions to use
-				let instructions 	= "isNull";
+	} );
 
-				// Do the validation
-				let results			= validator.validate( testValue, instructions );
+	describe( "#instructionHasChecks()", function () {
+
+		describe( "( <string> )", function() {
+
+			it( "should always return TRUE", function() {
+				expect( validator.instructionHasChecks( "a_string" ) ).to.equal( true );
+			} );
+
+		} );
+
+		describe( "( <array> )", function() {
+
+			it( "should return TRUE for arrays containing valid checks (variant #1)", function() {
+
+				// Define the test value
+				let testValue = [ "a", "b", "c" ];
+
+				// Do the count
+				let result = validator.instructionHasChecks( testValue );
 
 				// Assert
-				expect( results.success ).to.equal( true );
+				expect( result ).to.equal( true );
 
 			} );
 
-			it( "should throw an Error when validation fails", function () {
+			it( "should return TRUE for arrays containing valid checks (variant #2)", function() {
 
-				// A value to test..
-				let testValue 		= "notnull";
+				// Define the test value
+				let testValue = [ 1, 2, 3 ];
 
-				// The validation instructions to use
-				let instructions 	= "isNull";
-
-				// When evaluating errors, we must wrap
-				// them in a helper function
-				let testFn = function() {
-					validator.validate( testValue, instructions );
-				};
+				// Do the count
+				let result = validator.instructionHasChecks( testValue );
 
 				// Assert
-				expect( testFn ).to.throw( Error );
+				expect( result ).to.equal( true );
+
+			} );
+
+			it( "should return FALSE for empty arrays", function() {
+
+				// Define the test value
+				let testValue = [];
+
+				// Do the count
+				let result = validator.instructionHasChecks( testValue );
+
+				// Assert
+				expect( result ).to.equal( false );
 
 			} );
 
 		} );
 
-		describe( "(Validation Options)", function () {
+		describe( "( <object> )", function() {
 
-			it( "should throw an error, by default, when validation fails", function () {
+			it( "should return TRUE if provided a LooseValidationInstructions that contains checks (variant #1)", function() {
 
-				// A value to test..
-				let testValue 		= "notnull";
+				// Define the test value
+				let testValue = { isString: true, isBoolean: true };
 
-				// The validation instructions to use
-				let instructions 	= "isNull";
-
-				// When evaluating errors, we must wrap
-				// them in a helper function
-				let testFn = function() {
-					validator.validate( testValue, instructions );
-				};
+				// Do the count
+				let result = validator.instructionHasChecks( testValue );
 
 				// Assert
-				expect( testFn ).to.throw( Error );
+				expect( result ).to.equal( true );
 
 			} );
 
-			it( "should not throw errors when `throwErrors=false`", function () {
+			it( "should return TRUE if provided a LooseValidationInstructions that contains checks (variant #2)", function() {
 
-				// A value to test..
-				let testValue 		= "notnull";
+				// Define the test value
+				let testValue = { equals: "hello" };
 
-				// The validation instructions to use
-				let instructions 	= {
-					isNull      : true,
-					throwErrors : false
-				};
-
-				// When evaluating errors, we must wrap
-				// them in a helper function
-				let testFn = function() {
-					validator.validate( testValue, instructions );
-				};
+				// Do the count
+				let result = validator.instructionHasChecks( testValue );
 
 				// Assert
-				expect( testFn ).to.not.throw( Error );
+				expect( result ).to.equal( true );
 
 			} );
 
-			it( "should pass for NULL values when `allowNull=true`", function () {
+			it( "should return FALSE if provided a LooseValidationInstructions that does not contain a checks", function() {
 
-				// A value to test..
-				let testValue 		= null;
+				// Define the test value
+				let testValue = { allowNull: false, returnFullResults: true, throwErrors: false };
 
-				// The validation instructions to use
-				let instructions 	= {
-					isString  : true,
-					allowNull : true
-				};
-
-				// When evaluating errors, we must wrap
-				// them in a helper function
-				let testFn = function() {
-					validator.validate( testValue, instructions );
-				};
+				// Do the count
+				let result = validator.instructionHasChecks( testValue );
 
 				// Assert
-				expect( testFn ).to.not.throw( Error );
+				expect( result ).to.equal( false );
 
 			} );
 
-			it( "should still fail, as usual, for non-NULL values when `allowNull=true`", function () {
+		} );
 
-				// A value to test..
-				let testValue 		= "notnull";
+		describe( "( <CheckValidationInstruction> )", function() {
 
-				// The validation instructions to use
-				let instructions 	= {
-					isNull    : true,
-					allowNull : true
+			it( "should always return TRUE", function() {
+
+				// Define the test value
+				let testValue = { $check: "isNull" };
+
+				// Do the count
+				let result = validator.instructionHasChecks( testValue );
+
+				// Assert
+				expect( result ).to.equal( true );
+
+			} );
+
+		} );
+
+		describe( "( <ValidationInstructionCollection> )", function() {
+
+			it( "should return TRUE if provided an $any collection that contains checks", function() {
+
+				// Define the test value
+				let testValue = { $any: [ "isNull", "isString" ] };
+
+				// Do the count
+				let result = validator.instructionHasChecks( testValue );
+
+				// Assert
+				expect( result ).to.equal( true );
+
+			} );
+
+			it( "should return FALSE if provided an $any collection that does not contain checks", function() {
+
+				// Define the test value
+				let testValue = { $any: [] };
+
+				// Do the count
+				let result = validator.instructionHasChecks( testValue );
+
+				// Assert
+				expect( result ).to.equal( false );
+
+			} );
+
+			it( "should return TRUE if provided an $all collection that contains checks", function() {
+
+				// Define the test value
+				let testValue = { $all: [ "isNull", "isString" ] };
+
+				// Do the count
+				let result = validator.instructionHasChecks( testValue );
+
+				// Assert
+				expect( result ).to.equal( true );
+
+			} );
+
+			it( "should return FALSE if provided an $all collection that does not contain checks", function() {
+
+				// Define the test value
+				let testValue = { $all: [] };
+
+				// Do the count
+				let result = validator.instructionHasChecks( testValue );
+
+				// Assert
+				expect( result ).to.equal( false );
+
+			} );
+
+			it( "should return FALSE for nested collections with zero checks", function() {
+
+				// Define the test value
+				let testValue = {
+					$all: [
+						{
+							$any: [
+								{
+									$all: [
+										{
+											$any: [
+												{
+													$all: [
+
+													]
+												}
+											]
+										}
+									]
+								}
+							]
+						}, {
+							$any: [
+								{
+									$all: [
+										{
+											$any: [
+												{
+													$all: [
+
+													]
+												}
+											]
+										}
+									]
+								}
+							]
+						}
+					]
 				};
+
+				// Do the count
+				let result = validator.instructionHasChecks( testValue );
+
+				// Assert
+				expect( result ).to.equal( false );
+
+			} );
+
+		} );
+
+	} );
+
+	describe( "#getInstructionCheckCount", function () {
+
+		describe( "( <string> )", function() {
+
+			it( "should always return exactly '1'", function() {
+				expect( validator.getInstructionCheckCount( "a_string" ) ).to.equal( 1 );
+			} );
+
+		} );
+
+		describe( "( <array> )", function() {
+
+			it( "should return the number of valid instructions in the array (variant #1)", function() {
+
+				// Define the test value
+				let testValue = [ "a", "b", "c" ];
+
+				// Do the count
+				let result = validator.getInstructionCheckCount( testValue );
+
+				// Assert
+				expect( result ).to.equal( 3 );
+
+			} );
+
+			it( "should return the number of valid instructions in the array (variant #2)", function() {
+
+				// Define the test value
+				let testValue = [ 1, 2, 3 ];
+
+				// Do the count
+				let result = validator.getInstructionCheckCount( testValue );
+
+				// Assert
+				expect( result ).to.equal( 3 );
+
+			} );
+
+			it( "should return '0' (zero) for empty arrays", function() {
+
+				// Define the test value
+				let testValue = [];
+
+				// Do the count
+				let result = validator.getInstructionCheckCount( testValue );
+
+				// Assert
+				expect( result ).to.equal( 0 );
+
+			} );
+
+		} );
+
+		describe( "( <object> )", function() {
+
+			it( "should return the number of valid instructions found in LooseValidationInstructions (variant #1)", function() {
+
+				// Define the test value
+				let testValue = { isString: true, isBoolean: true };
+
+				// Do the count
+				let result = validator.getInstructionCheckCount( testValue );
+
+				// Assert
+				expect( result ).to.equal( 2 );
+
+			} );
+
+			it( "should return the number of valid instructions found in LooseValidationInstructions (variant #2)", function() {
+
+				// Define the test value
+				let testValue = { equals: "hello" };
+
+				// Do the count
+				let result = validator.getInstructionCheckCount( testValue );
+
+				// Assert
+				expect( result ).to.equal( 1 );
+
+			} );
+
+			it( "should ignore validation options", function() {
+
+				// Define the test value
+				let testValue = { isString: true, isBoolean: true, allowNull: false };
+
+				// Do the count
+				let result = validator.getInstructionCheckCount( testValue );
+
+				// Assert
+				expect( result ).to.equal( 2 );
+
+			} );
+
+			it( "should return '0' for plain objects that do not contain checks", function() {
+
+				// Define the test value
+				let testValue = { allowNull: false, returnFullResults: true, throwErrors: false };
+
+				// Do the count
+				let result = validator.getInstructionCheckCount( testValue );
+
+				// Assert
+				expect( result ).to.equal( 0 );
+
+			} );
+
+		} );
+
+		describe( "( <CheckValidationInstruction> )", function() {
+
+			it( "should always return exactly '1'", function() {
+
+				// Define the test value
+				let testValue = { $check: "isNull" };
+
+				// Do the count
+				let result = validator.getInstructionCheckCount( testValue );
+
+				// Assert
+				expect( result ).to.equal( 1 );
+
+			} );
+
+		} );
+
+		describe( "( <ValidationInstructionCollection> )", function() {
+
+			it( "should return the check count for a simple $any collection", function() {
+
+				// Define the test value
+				let testValue = { $any: [ "isNull", "isString" ] };
+
+				// Do the count
+				let result = validator.getInstructionCheckCount( testValue );
+
+				// Assert
+				expect( result ).to.equal( 2 );
+
+			} );
+
+			it( "should return zero for empty $any collections", function() {
+
+				// Define the test value
+				let testValue = { $any: [] };
+
+				// Do the count
+				let result = validator.getInstructionCheckCount( testValue );
+
+				// Assert
+				expect( result ).to.equal( 0 );
+
+			} );
+
+			it( "should return the check count for a simple $any collection", function() {
+
+				// Define the test value
+				let testValue = { $all: [ "isNull", "isString" ] };
+
+				// Do the count
+				let result = validator.getInstructionCheckCount( testValue );
+
+				// Assert
+				expect( result ).to.equal( 2 );
+
+			} );
+
+			it( "should return zero for empty $all collections", function() {
+
+				// Define the test value
+				let testValue = { $all: [] };
+
+				// Do the count
+				let result = validator.getInstructionCheckCount( testValue );
+
+				// Assert
+				expect( result ).to.equal( 0 );
+
+			} );
+
+			it( "should return zero for nested collections with zero checks", function() {
+
+				// Define the test value
+				let testValue = {
+					$all: [
+						{
+							$any: [
+								{
+									$all: [
+										{
+											$any: [
+												{
+													$all: [
+
+													]
+												}
+											]
+										}
+									]
+								}
+							]
+						}, {
+							$any: [
+								{
+									$all: [
+										{
+											$any: [
+												{
+													$all: [
+
+													]
+												}
+											]
+										}
+									]
+								}
+							]
+						}
+					]
+				};
+
+				// Do the count
+				let result = validator.getInstructionCheckCount( testValue );
+
+				// Assert
+				expect( result ).to.equal( 0 );
+
+			} );
+
+		} );
+
+	} );
+
+	describe( "#validate", function () {
+
+		describe( "()", function () {
+
+			it( "should test using `.defaultValidationInstruction` and ALWAYS throw a ValidationError", function () {
 
 				// When evaluating errors, we must wrap
 				// them in a helper function
 				let testFn = function() {
-					validator.validate( testValue, instructions );
+					validator.validate();
 				};
 
 				// Assert
-				expect( testFn ).to.throw( Error );
+				expect( testFn ).to.throw( ValidationError );
+
+			} );
+
+		} );
+
+		describe( "( <any> )", function () {
+
+			it( "should test using `.defaultValidationInstruction` and throw a ValidationError for NULL values", function () {
+
+				// A value to test..
+				let testValue = null;
+
+				// When evaluating errors, we must wrap
+				// them in a helper function
+				let testFn = function() {
+					validator.validate( testValue );
+				};
+
+				// Assert
+				expect( testFn ).to.throw( ValidationError );
+
+			} );
+
+			it( "should test using `.defaultValidationInstruction` and throw a ValidationError for UNDEFINED values", function () {
+
+				// A value to test..
+				let testValue = undefined;
+
+				// When evaluating errors, we must wrap
+				// them in a helper function
+				let testFn = function() {
+					validator.validate( testValue );
+				};
+
+				// Assert
+				expect( testFn ).to.throw( ValidationError );
+
+			} );
+
+			it( "should test using `.defaultValidationInstruction` and should NOT throw for non-NIL values", function () {
+
+				// A value to test..
+				let testValue = Symbol.for( "anything that isn't NIL (NULL or Undefined)" );
+
+				// When evaluating errors, we must wrap
+				// them in a helper function
+				let testFn = function() {
+					validator.validate( testValue );
+				};
+
+				// Assert
+				expect( testFn ).to.not.throw( ValidationError );
+
+			} );
+
+		} );
+
+		describe( "( <any>, <EmptyObject> )", function () {
+
+			it( "should test using `.defaultValidationInstruction` and throw a ValidationError for NULL values", function () {
+
+				// A value to test..
+				let testValue = null;
+
+				// When evaluating errors, we must wrap
+				// them in a helper function
+				let testFn = function() {
+					validator.validate( testValue, {} );
+				};
+
+				// Assert
+				expect( testFn ).to.throw( ValidationError );
+
+			} );
+
+			it( "should test using `.defaultValidationInstruction` and throw a ValidationError for UNDEFINED values", function () {
+
+				// A value to test..
+				let testValue = undefined;
+
+				// When evaluating errors, we must wrap
+				// them in a helper function
+				let testFn = function() {
+					validator.validate( testValue, {} );
+				};
+
+				// Assert
+				expect( testFn ).to.throw( ValidationError );
+
+			} );
+
+			it( "should test using `.defaultValidationInstruction` and should NOT throw for non-NIL values", function () {
+
+				// A value to test..
+				let testValue = Symbol.for( "anything that isn't NIL (NULL or Undefined)" );
+
+				// When evaluating errors, we must wrap
+				// them in a helper function
+				let testFn = function() {
+					validator.validate( testValue, {} );
+				};
+
+				// Assert
+				expect( testFn ).to.not.throw( ValidationError );
+
+			} );
+
+		} );
+
+		describe( "( <any>, <OptionsOnly> )", function () {
+
+			it( "should test using `.defaultValidationInstruction` and throw a ValidationError for NULL values", function () {
+
+				// A value to test..
+				let testValue = null;
+
+				// When evaluating errors, we must wrap
+				// them in a helper function
+				let testFn = function() {
+					validator.validate( testValue, { allowNull: false, returnFullResults: true } );
+				};
+
+				// Assert
+				expect( testFn ).to.throw( ValidationError );
+
+			} );
+
+			it( "should test using `.defaultValidationInstruction` and throw a ValidationError for UNDEFINED values", function () {
+
+				// A value to test..
+				let testValue = undefined;
+
+				// When evaluating errors, we must wrap
+				// them in a helper function
+				let testFn = function() {
+					validator.validate( testValue, { allowNull: false, returnFullResults: true } );
+				};
+
+				// Assert
+				expect( testFn ).to.throw( ValidationError );
+
+			} );
+
+			it( "should test using `.defaultValidationInstruction` and should NOT throw for non-NIL values", function () {
+
+				// A value to test..
+				let testValue = Symbol.for( "anything that isn't NIL (NULL or Undefined)" );
+
+				// When evaluating errors, we must wrap
+				// them in a helper function
+				let testFn = function() {
+					validator.validate( testValue, { allowNull: false, returnFullResults: true } );
+				};
+
+				// Assert
+				expect( testFn ).to.not.throw( ValidationError );
+
+			} );
+
+		} );
+
+		describe( "( <any>, <NULL> )", function () {
+
+
+			it( "should test using `.defaultValidationInstruction` and throw a ValidationError for NULL values", function () {
+
+				// A value to test..
+				let testValue = null;
+
+				// When evaluating errors, we must wrap
+				// them in a helper function
+				let testFn = function() {
+					validator.validate( testValue, null );
+				};
+
+				// Assert
+				expect( testFn ).to.throw( ValidationError );
+
+			} );
+
+			it( "should test using `.defaultValidationInstruction` and throw a ValidationError for UNDEFINED values", function () {
+
+				// A value to test..
+				let testValue = undefined;
+
+				// When evaluating errors, we must wrap
+				// them in a helper function
+				let testFn = function() {
+					validator.validate( testValue, null );
+				};
+
+				// Assert
+				expect( testFn ).to.throw( ValidationError );
+
+			} );
+
+			it( "should test using `.defaultValidationInstruction` and should NOT throw for non-NIL values", function () {
+
+				// A value to test..
+				let testValue = Symbol.for( "anything that isn't NIL (NULL or Undefined)" );
+
+				// When evaluating errors, we must wrap
+				// them in a helper function
+				let testFn = function() {
+					validator.validate( testValue, null );
+				};
+
+				// Assert
+				expect( testFn ).to.not.throw( ValidationError );
+
+			} );
+
+		} );
+
+		describe( "( <any>, <LooseValidationInstruction> )", function () {
+
+			describe( "(Basic Functionality)", function () {
+
+				it( "should return the passed in `value` when validation succeeds", function () {
+
+					// A value to test..
+					let testValue 		= "hello";
+
+					// The validation instructions to use
+					let instructions 	= "!isNull";
+
+					// Do the validation
+					let results			= validator.validate( testValue, instructions );
+
+					// Assert
+					expect( results ).to.equal( "hello" );
+
+				} );
+
+				it( "should throw an Error when validation fails", function () {
+
+					// A value to test..
+					let testValue 		= "notnull";
+
+					// The validation instructions to use
+					let instructions 	= "isNull";
+
+					// When evaluating errors, we must wrap
+					// them in a helper function
+					let testFn = function() {
+						validator.validate( testValue, instructions );
+					};
+
+					// Assert
+					expect( testFn ).to.throw( Error );
+
+				} );
+
+			} );
+
+			describe( "(Validation Options)", function () {
+
+				describe( "(opts.throwErrors)", function () {
+
+					it( "should throw an error, by default, when validation fails", function () {
+
+						// A value to test..
+						let testValue 		= "notnull";
+
+						// The validation instructions to use
+						let instructions 	= "isNull";
+
+						// When evaluating errors, we must wrap
+						// them in a helper function
+						let testFn = function() {
+							validator.validate( testValue, instructions );
+						};
+
+						// Assert
+						expect( testFn ).to.throw( Error );
+
+					} );
+
+					it( "should not throw errors when `throwErrors=false`", function () {
+
+						// A value to test..
+						let testValue 		= "notnull";
+
+						// The validation instructions to use
+						let instructions 	= {
+							isNull      : true,
+							throwErrors : false
+						};
+
+						// When evaluating errors, we must wrap
+						// them in a helper function
+						let testFn = function() {
+							validator.validate( testValue, instructions );
+						};
+
+						// Assert
+						expect( testFn ).to.not.throw( Error );
+
+					} );
+
+					it( "should return NULL when `throwErrors=false` (and no defaultValue is defined)", function () {
+
+						// A value to test..
+						let testValue 		= "notnull";
+
+						// The validation instructions to use
+						let instructions 	= {
+							isNull      : true,
+							throwErrors : false
+						};
+
+						// Validate
+						let result = validator.validate( testValue, instructions );
+
+						// Assert
+						expect( result ).to.equal( null );
+
+					} );
+
+				} );
+
+				describe( "(opts.allowNull)", function () {
+
+					it( "should pass for NULL values when `allowNull=true`", function () {
+
+						// A value to test..
+						let testValue 		= null;
+
+						// The validation instructions to use
+						let instructions 	= {
+							isString  : true,
+							allowNull : true
+						};
+
+						// When evaluating errors, we must wrap
+						// them in a helper function
+						let testFn = function() {
+							validator.validate( testValue, instructions );
+						};
+
+						// Assert
+						expect( testFn ).to.not.throw( Error );
+
+					} );
+
+					it( "should still fail, as usual, for non-NULL values when `allowNull=true`", function () {
+
+						// A value to test..
+						let testValue 		= "notnull";
+
+						// The validation instructions to use
+						let instructions 	= {
+							isNull    : true,
+							allowNull : true
+						};
+
+						// When evaluating errors, we must wrap
+						// them in a helper function
+						let testFn = function() {
+							validator.validate( testValue, instructions );
+						};
+
+						// Assert
+						expect( testFn ).to.throw( Error );
+
+					} );
+
+				} );
+
+				describe( "(opts.defaultValue)", function () {
+
+					it( "should never throw errors when a `defaultValue` passed", function () {
+
+						// A value to test..
+						let testValue 		= null;
+
+						// The validation instructions to use
+						let instructions 	= {
+							isString     : true,
+							defaultValue : "something"
+						};
+
+						// When evaluating errors, we must wrap
+						// them in a helper function
+						let testFn = function() {
+							validator.validate( testValue, instructions );
+						};
+
+						// Assert
+						expect( testFn ).to.not.throw( Error );
+
+					} );
+
+					it( "should return the `defaultValue` (if specified) on validation failure", function () {
+
+						// A value to test..
+						let testValue 		= null;
+
+						// The validation instructions to use
+						let instructions 	= {
+							isString     : true,
+							defaultValue : "something"
+						};
+
+						// Validate
+						let result = validator.validate( testValue, instructions );
+
+						// Assert
+						expect( result ).to.equal( "something" );
+
+					} );
+
+					it( "should execute `defaultValue` (if specified and a function) on validation failure and return the result", function () {
+
+						// A value to test..
+						let testValue 		= null;
+
+						// The validation instructions to use
+						let instructions 	= {
+							isString     : true,
+							defaultValue : function() {
+								return "some-return";
+							}
+						};
+
+						// Validate
+						let result = validator.validate( testValue, instructions );
+
+						// Assert
+						expect( result ).to.equal( "some-return" );
+
+					} );
+
+					it( "should return the `defaultValue` (if specified) on validation failure (against the defaultValidateInstruction)", function () {
+
+						// A value to test..
+						let testValue 		= null;
+
+						// The validation instructions to use
+						let instructions 	= {
+							defaultValue: "something"
+						};
+
+						// Validate
+						let result = validator.validate( testValue, instructions );
+
+						// Assert
+						expect( result ).to.equal( "something" );
+
+					} );
+
+				} );
 
 			} );
 

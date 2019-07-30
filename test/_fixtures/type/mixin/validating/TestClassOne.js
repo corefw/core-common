@@ -30,6 +30,41 @@ class TestClassOne extends Core.mix( "Core.abstract.Component", "Test.fixture.ty
 		} );
 	}
 
+	paramTest1( someParam ) {
+		return this.$validateParam( "someParam", someParam, [ "isBoolean", "isString" ] );
+	}
+
+	objTestBasic( obj ) {
+
+		return this.$validateObject( "obj", obj, {
+			a : "isString",
+			b : "isBoolean"
+		} );
+
+	}
+
+	objTestGlobalMergeA( obj ) {
+
+		return this.$validateObject( "obj", obj, {
+			a: "isNumber"
+		}, "isInteger" );
+
+	}
+
+	objTestGlobalMergeB( obj ) {
+
+		return this.$validateObject( "obj", obj, {
+			a: "isInteger"
+		}, "isNumber" );
+
+	}
+
+	objDynamicTest( obj, propertyOptions, globalOptions ) {
+
+		return this.$validateObject( "obj", obj, propertyOptions, globalOptions );
+
+	}
+
 }
 
 module.exports = TestClassOne;
