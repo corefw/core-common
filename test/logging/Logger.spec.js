@@ -16,9 +16,9 @@
 // Convenient Error References
 const DependencyValidationError = Core.error.DependencyValidationError;
 
-describe( "Core.logging.Logger", function () {
+describe.skip( "Core.logging.Logger", function () {
 
-	describe.only( "$construct()", function () {
+	describe( "$construct()", function () {
 
 		it( "should require a Core.context.Context class instance", function() {
 

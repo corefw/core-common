@@ -16,7 +16,7 @@
 // Convenience references for errors.
 const ValidationError = Core.error.ValidationError;
 
-describe.only( "Core.logging.output.Collection", function () {
+describe( "Core.logging.output.Collection", function () {
 
 	describe( "#$construct()", function () {
 
