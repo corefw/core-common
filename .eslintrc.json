@@ -1,3 +1,9 @@
 {
-	"extends": "@corefw/eslint-config"
+	"extends": "@corefw/eslint-config",
+	"parserOptions": {
+		"ecmaVersion": 8
+	},
+	"globals": {
+		"Core": "readonly"
+	}
 }
